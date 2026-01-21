@@ -130,7 +130,13 @@ router.post('/create-checkout', async (req, res) => {
       }
     );
 
-    res.json(response.data);
+    console.log('[CREATE-CHECKOUT] Response:', response.data);
+
+    // Extract the nested data object (response has { success, data: { checkoutUrl, sessionId } })
+    const checkoutData = response.data.data || response.data;
+    console.log('[CREATE-CHECKOUT] Returning:', checkoutData);
+
+    res.json(checkoutData);
   } catch (error) {
     console.error('Checkout creation error:', error);
     res.status(500).json({
