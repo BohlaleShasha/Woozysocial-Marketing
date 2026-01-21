@@ -63,15 +63,24 @@ router.post('/create-account', async (req, res) => {
     );
 
     console.log('[CREATE-ACCOUNT] Success:', response.data);
-    console.log('[CREATE-ACCOUNT] userId:', response.data.userId);
-    console.log('[CREATE-ACCOUNT] workspaceId:', response.data.workspaceId);
+
+    // Extract the nested data object
+    const responseData = response.data.data || response.data;
+    console.log('[CREATE-ACCOUNT] userId:', responseData.userId);
+    console.log('[CREATE-ACCOUNT] workspaceId:', responseData.workspaceId);
 
     // Ensure we're returning the data structure the frontend expects
-    if (!response.data.userId || !response.data.workspaceId) {
+    if (!responseData.userId || !responseData.workspaceId) {
       console.error('[CREATE-ACCOUNT] WARNING: Missing userId or workspaceId in response!');
+      console.error('[CREATE-ACCOUNT] Full response structure:', JSON.stringify(response.data, null, 2));
     }
 
-    res.json(response.data);
+    // Return the flattened structure for the frontend
+    res.json({
+      userId: responseData.userId,
+      workspaceId: responseData.workspaceId,
+      message: responseData.message || 'Account created successfully'
+    });
   } catch (error) {
     console.error('[CREATE-ACCOUNT] Error:', error.message);
     console.error('[CREATE-ACCOUNT] Response:', error.response?.data);
