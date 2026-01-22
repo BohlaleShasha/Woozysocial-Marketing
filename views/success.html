@@ -85,8 +85,13 @@
           throw new Error(data.message || 'Failed to complete onboarding');
         }
 
-        // Redirect to main app with login token
-        window.location.href = `${mainAppUrl}/auth/token-login?token=${data.loginToken}`;
+        // Check if we got a successful response with login token
+        if (data.success && data.data && data.data.loginToken) {
+          // Redirect to main app with login token
+          window.location.href = `${mainAppUrl}/auth/token-login?token=${data.data.loginToken}`;
+        } else {
+          throw new Error('No login token received from server');
+        }
 
       } catch (error) {
         console.error('Error completing onboarding:', error);
